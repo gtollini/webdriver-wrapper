@@ -21,6 +21,21 @@ description:         Please see the README on GitHub at <https://github.com/gtol
 
 dependencies:
 - base >= 4.7 && < 5
+- text
+- webdriver
+- unordered-containers
+- directory
+- process
+- process-extras
+- string-interpolate
+- http-conduit
+- aeson
+- http-types
+- bytestring
+- tar
+- zip-archive
+- zlib
+- async
 
 ghc-options:
 - -Wall
