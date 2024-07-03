@@ -8,7 +8,7 @@ import Constants (defaultSeleniumJarUrl, seleniumPath, downloadPath, geckoDriver
 import Helpers (download)
 import System.Directory (createDirectoryIfMissing, doesFileExist)
 import Control.Monad (unless)
-import GHC.IO.Handle ( Handle, hGetLine )
+import GHC.IO.Handle ( Handle, hGetLine, hClose )
 import System.Process (ProcessHandle, createProcess)
 import Data.String.Interpolate (i)
 import System.IO (openFile)
@@ -40,6 +40,7 @@ waitForSeleniumStart = do
     succeeded <- retryOnError  retryPolicy'
         (\_ e -> return $ isEOFError e)
         (\retryStatus -> if rsIterNumber retryStatus < 599 then logFileHasReadyMessage fileHandle else return False)
+    hClose fileHandle
     unless succeeded $ error $ "Couldn't start Selenium successfully. Check " <> logFile <> " for more information."
         where
             -- waits a minute, retrying every 100ms

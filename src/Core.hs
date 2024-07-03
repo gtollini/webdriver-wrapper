@@ -1,4 +1,4 @@
-module Core (wrappedRunSession, wrappedRunWD) where
+module Core (wrappedRunSession, wrappedRunWD, wrapWebDriverFunction) where
 
 import System.Process (cleanupProcess)
 import Control.Concurrent.Async (concurrently_)
