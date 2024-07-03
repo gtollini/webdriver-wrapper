@@ -38,6 +38,7 @@ dependencies:
 - async
 - retry
 - extra
+- filepath
 
 ghc-options:
 - -Wall

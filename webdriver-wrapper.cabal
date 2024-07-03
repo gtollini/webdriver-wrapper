@@ -44,6 +44,7 @@ library
     , bytestring
     , directory
     , extra
+    , filepath
     , http-conduit
     , http-types
     , process
@@ -75,6 +76,7 @@ test-suite webdriver-wrapper-test
     , bytestring
     , directory
     , extra
+    , filepath
     , http-conduit
     , http-types
     , process

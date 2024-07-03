@@ -4,28 +4,24 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 
-module Constants (geckoDriverPath, defaultPath, defaultSeleniumJarUrl, desiredPlatform, firefoxExecutableCandidates, getGeckoDriverDownloadUrl, geckoDriverVersionSource, (</>), downloadPath, geckoArchivePath, fileFormat, seleniumPath) where
+module Constants (geckoDriverPath, defaultPath, defaultSeleniumJarUrl, desiredPlatform, getGeckoDriverDownloadUrl, geckoDriverVersionSource, downloadPath, geckoArchivePath, fileFormat, seleniumPath, seleniumLogPath) where
 
 import Data.String.Interpolate (i)
 import qualified System.Info as SI
-import System.Directory (getHomeDirectory)
+import System.Directory (getXdgDirectory, XdgDirectory (XdgData))
+import System.FilePath ((</>))
 
-
-(</>) :: String -> String -> String
-(</>) a b = a ++ "/" ++ b 
-
+-- Paths. Should be platform independent.
 defaultPath :: IO FilePath
-defaultPath = (++"/.haskell-webdriver-wrapper") <$> getHomeDirectory
+defaultPath = getXdgDirectory XdgData "haskell-webdriver-wrapper"
 
 downloadPath :: IO FilePath
 downloadPath = (</> desiredPlatform) <$> defaultPath
 
 geckoArchivePath :: IO FilePath
-geckoArchivePath = do
-    dPath <- downloadPath
-    return [i|#{dPath}/geckodriver#{format}|]
+geckoArchivePath = (</> archive) <$> downloadPath
     where
-        format = fileFormat
+        archive = "geckodriver" <> fileFormat
 
 geckoDriverPath :: IO FilePath
 geckoDriverPath = (</> "geckodriver") <$> downloadPath
@@ -33,11 +29,12 @@ geckoDriverPath = (</> "geckodriver") <$> downloadPath
 seleniumPath :: IO FilePath
 seleniumPath = (</> "selenium.jar") <$> downloadPath
 
+seleniumLogPath :: IO FilePath
+seleniumLogPath = (</> "selenium.log") <$> defaultPath
+
+-- URLs. Might change at any moment, kinda why I'm putting them all together here.
 defaultSeleniumJarUrl :: String
 defaultSeleniumJarUrl = "https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar"
-
-firefoxExecutableCandidates :: [String]
-firefoxExecutableCandidates = ["firefox"]
 
 geckoDriverVersionSource :: String
 geckoDriverVersionSource = "https://api.github.com/repos/mozilla/geckodriver/releases/latest"
@@ -48,6 +45,7 @@ getGeckoDriverDownloadUrl version = [i|https://github.com/mozilla/geckodriver/re
         platform = desiredPlatform
         format = fileFormat
 
+-- Platform-dependent variables. 
 fileFormat :: String
 fileFormat = case SI.os of
     "windows" -> ".zip"
@@ -75,5 +73,3 @@ desiredPlatform = case (SI.os, SI.arch) of
     ("linux", "i386")       -> "linux32"
 
     _ -> "linux64"
-
-

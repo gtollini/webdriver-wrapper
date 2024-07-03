@@ -5,8 +5,8 @@ module GeckoDriver (getGeckoDriver, getGeckoDriverVersion, getGeckoDriverIfNeede
 
 import qualified Data.Text as T
 import Network.HTTP.Simple (setRequestMethod, httpLBS, parseRequest, setRequestHeader)
-import Helpers (checkExecutableCandidates, download, decompress)
-import Constants (firefoxExecutableCandidates, getGeckoDriverDownloadUrl, geckoDriverVersionSource, geckoArchivePath, geckoDriverPath, downloadPath)
+import Helpers (download, decompress)
+import Constants (getGeckoDriverDownloadUrl, geckoDriverVersionSource, geckoArchivePath, geckoDriverPath, downloadPath)
 import Network.HTTP.Client.Conduit (Response(responseBody))
 import Data.Aeson (eitherDecode)
 import Network.HTTP.Types (hUserAgent)
@@ -15,13 +15,11 @@ import qualified Data.Aeson as A
 import System.Directory (createDirectoryIfMissing, removeFile, doesFileExist)
 import Control.Monad (unless)
 
-
 getGeckoDriverIfNeeded :: IO ()
 getGeckoDriverIfNeeded = do
     geckoPath <- geckoDriverPath
     hasGeckoDriver  <- doesFileExist geckoPath
     unless hasGeckoDriver getGeckoDriver
-
 
 getGeckoDriver :: IO()
 getGeckoDriver = do
@@ -53,11 +51,8 @@ getGeckoDriverVersion = do
         version = case maybeVersion of
             Nothing -> error "Couldn't parse response from GeckoDriver's version API"
             (Just (A.String v))-> v
-            (Just _) -> error "\"tag_name\" key isn't returning a string. Maybe GeckoDriver's version API changed."
+            (Just _) -> error "\"tag_name\" key isn't returning a string. Maybe GeckoDriver's version API changed, consider opening a github issue."
     return $ T.unpack version
 
     where
         versionAPI = geckoDriverVersionSource
-
--- firefoxExecutablePath :: IO FilePath
--- firefoxExecutablePath = checkExecutableCandidates firefoxExecutableCandidates "firefox"
