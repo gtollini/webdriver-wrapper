@@ -43,10 +43,12 @@ library
     , base >=4.7 && <5
     , bytestring
     , directory
+    , extra
     , http-conduit
     , http-types
     , process
     , process-extras
+    , retry
     , string-interpolate
     , tar
     , text
@@ -72,10 +74,12 @@ test-suite webdriver-wrapper-test
     , base >=4.7 && <5
     , bytestring
     , directory
+    , extra
     , http-conduit
     , http-types
     , process
     , process-extras
+    , retry
     , string-interpolate
     , tar
     , text

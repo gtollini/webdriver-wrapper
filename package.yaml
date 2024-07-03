@@ -36,6 +36,8 @@ dependencies:
 - zip-archive
 - zlib
 - async
+- retry
+- extra
 
 ghc-options:
 - -Wall
