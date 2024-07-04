@@ -2,14 +2,14 @@
 Module : Core
 Description : end-user functions.
 
-The wrapped functions (`wrappedRunSession` and `wrappedRunWD`) will download Selenium and Firefox's webdriver (geckodriver) if they're not already on the `Constants.downloadPath`, then start Selenium before running the webdriver equivalent function (`runSession` and `runWD`). They kill the Selenium process at the end of their execution. 
+The wrapped functions (`wrappedRunSession` and `wrappedRunWD`) will download Selenium and Firefox's webdriver (geckodriver) if they're not already on the `Test.WebDriverWrapper.Constants.downloadPath`, then start Selenium before running the webdriver equivalent function (`runSession` and `runWD`). They kill the Selenium process at the end of their execution. 
 -}
-module Core (wrappedRunSession, wrappedRunWD, wrapWebDriverFunction, downloadIfMissing) where
+module Test.WebDriverWrapper (wrappedRunSession, wrappedRunWD, wrapWebDriverFunction, downloadIfMissing) where
 
 import System.Process (cleanupProcess)
 import Control.Concurrent.Async (concurrently_)
-import Selenium (getSeleniumIfNeeded, startSelenium)
-import GeckoDriver (getGeckoDriverIfNeeded)
+import Test.WebDriverWrapper.Selenium (getSeleniumIfNeeded, startSelenium)
+import Test.WebDriverWrapper.GeckoDriver (getGeckoDriverIfNeeded)
 import Test.WebDriver (runSession)
 import Test.WebDriver.Types (WD, WDSession)
 import Test.WebDriver.Config (WebDriverConfig)

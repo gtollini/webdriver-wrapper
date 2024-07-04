@@ -1,11 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module GeckoDriver (getGeckoDriverIfNeeded) where
+module Test.WebDriverWrapper.GeckoDriver (getGeckoDriverIfNeeded) where
 
 import qualified Data.Text as T
 import Network.HTTP.Simple (setRequestMethod, httpLBS, parseRequest, setRequestHeader)
-import Helpers (download, decompress)
-import Constants (getGeckoDriverDownloadUrl, geckoDriverVersionSource, geckoArchivePath, geckoDriverPath, downloadPath)
+import Test.WebDriverWrapper.Helpers (download, decompress)
+import Test.WebDriverWrapper.Constants (getGeckoDriverDownloadUrl, geckoDriverVersionSource, geckoArchivePath, geckoDriverPath, downloadPath)
 import Network.HTTP.Client.Conduit (Response(responseBody))
 import Data.Aeson (eitherDecode)
 import Network.HTTP.Types (hUserAgent)
@@ -49,9 +49,9 @@ getGeckoDriverVersion = do
             (Left err) -> error err
             (Right version'') -> AKM.lookup "tag_name" version''
         version = case maybeVersion of
-            Nothing -> error "Couldn't parse response from GeckoDriver's version API"
+            Nothing -> error "Couldn't parse response from Test.WebDriverWrapper.GeckoDriver's version API"
             (Just (A.String v))-> v
-            (Just _) -> error "\"tag_name\" key isn't returning a string. Maybe GeckoDriver's version API changed, consider opening a github issue."
+            (Just _) -> error "\"tag_name\" key isn't returning a string. Maybe Test.WebDriverWrapper.GeckoDriver's version API changed, consider opening a github issue."
     return $ T.unpack version
 
     where

@@ -1,11 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 {- |
-Module : Helpers
+Module : Test.WebDriverWrapper.Helpers
 Description : Generic functions.
 -}
-module Helpers (download, decompress) where
+module Test.WebDriverWrapper.Helpers (download, decompress) where
 
-import Constants (fileFormat)
+import Test.WebDriverWrapper.Constants (fileFormat)
 import Network.HTTP.Simple (setRequestHeader, setRequestMethod, httpLBS)
 import Network.HTTP.Types (hUserAgent)
 import Network.HTTP.Conduit (Response(..), parseRequest)

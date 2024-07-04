@@ -2,10 +2,10 @@
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Selenium (startSelenium, getSeleniumIfNeeded) where
+module Test.WebDriverWrapper.Selenium (startSelenium, getSeleniumIfNeeded) where
 
-import Constants (defaultSeleniumJarUrl, seleniumPath, downloadPath, geckoDriverPath, seleniumLogPath)
-import Helpers (download)
+import Test.WebDriverWrapper.Constants (defaultSeleniumJarUrl, seleniumPath, downloadPath, geckoDriverPath, seleniumLogPath)
+import Test.WebDriverWrapper.Helpers (download)
 import System.Directory (createDirectoryIfMissing, doesFileExist)
 import Control.Monad (unless)
 import GHC.IO.Handle ( Handle, hGetLine, hClose )
