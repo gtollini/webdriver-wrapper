@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module GeckoDriver (getGeckoDriver, getGeckoDriverVersion, getGeckoDriverIfNeeded) where
+module GeckoDriver (getGeckoDriverIfNeeded) where
 
 import qualified Data.Text as T
 import Network.HTTP.Simple (setRequestMethod, httpLBS, parseRequest, setRequestHeader)
@@ -14,6 +14,7 @@ import qualified Data.Aeson as A
 import System.Directory (createDirectoryIfMissing, removeFile, doesFileExist)
 import Control.Monad (unless)
 
+-- | Checks if @geckodriver@ is in the `downloadPath`. If not, download it. 
 getGeckoDriverIfNeeded :: IO ()
 getGeckoDriverIfNeeded = do
     geckoPath <- geckoDriverPath

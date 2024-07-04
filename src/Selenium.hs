@@ -20,6 +20,8 @@ import Data.Foldable.Extra (orM)
 import Data.List (isInfixOf)
 import System.Process.Run (proc)
 
+-- | Starts Selenium and waits for its ok message ( "Selenium Server is up and running" ) to show up at the log file.
+-- Returns the handles for the Selenium process.
 startSelenium :: IO (Maybe Handle, Maybe Handle, Maybe Handle, ProcessHandle)
 startSelenium = do
     geckoPath <- geckoDriverPath
@@ -54,6 +56,7 @@ logFileHasReadyMessage fileHandle = orM remainingLines
 
         readyMessage = "Selenium Server is up and running"
 
+-- | Checks if @selenium@ is in the `downloadPath`. If not, download it. 
 getSeleniumIfNeeded :: IO ()
 getSeleniumIfNeeded = do
     selPath <- seleniumPath
