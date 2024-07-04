@@ -58,36 +58,3 @@ library
     , zip-archive
     , zlib
   default-language: Haskell2010
-
-test-suite webdriver-wrapper-test
-  type: exitcode-stdio-1.0
-  main-is: Spec.hs
-  other-modules:
-      Paths_webdriver_wrapper
-  autogen-modules:
-      Paths_webdriver_wrapper
-  hs-source-dirs:
-      test
-  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -O2 -threaded -rtsopts -with-rtsopts=-N
-  build-depends:
-      aeson
-    , async
-    , base >=4.7 && <5
-    , bytestring
-    , directory
-    , extra
-    , filepath
-    , http-conduit
-    , http-types
-    , process
-    , process-extras
-    , retry
-    , string-interpolate
-    , tar
-    , text
-    , unordered-containers
-    , webdriver
-    , webdriver-wrapper
-    , zip-archive
-    , zlib
-  default-language: Haskell2010

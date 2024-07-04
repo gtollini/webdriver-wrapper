@@ -1,6 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-
 module GeckoDriver (getGeckoDriver, getGeckoDriverVersion, getGeckoDriverIfNeeded) where
 
 import qualified Data.Text as T
