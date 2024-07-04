@@ -11,7 +11,7 @@ import Data.Aeson (eitherDecode)
 import Network.HTTP.Types (hUserAgent)
 import qualified Data.Aeson.KeyMap as AKM
 import qualified Data.Aeson as A
-import System.Directory (createDirectoryIfMissing, removeFile, doesFileExist, getPermissions, setOwnerExecutable, setPermissions)
+import System.Directory (createDirectoryIfMissing, removeFile, doesFileExist)
 import Control.Monad (unless)
 
 -- | Checks if @geckodriver@ is in the `downloadPath`. If not, download it. 
@@ -26,7 +26,6 @@ getGeckoDriver = do
     version <- getGeckoDriverVersion
     dPath <- downloadPath
     tarballPath <- geckoArchivePath
-    geckoPath <- geckoDriverPath
 
     createDirectoryIfMissing True dPath
 
@@ -35,10 +34,6 @@ getGeckoDriver = do
     decompress tarballPath dPath
     removeFile tarballPath
     
-    currentGeckoPermissions <- getPermissions geckoPath
-    let executablePermission = setOwnerExecutable True currentGeckoPermissions 
-    setPermissions geckoPath executablePermission
-
 getGeckoDriverVersion :: IO String
 getGeckoDriverVersion = do
     requestUrl <- parseRequest versionAPI
