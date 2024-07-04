@@ -14,6 +14,7 @@ import Test.WebDriver (runSession)
 import Test.WebDriver.Types (WD, WDSession)
 import Test.WebDriver.Config (WebDriverConfig)
 import Test.WebDriver.Monad (runWD)
+import Control.Exception (bracket)
 
 -- | Same as `runSession`, but starts Selenium before execution and kills Selenium after execution. 
 -- Will download Selenium or Firefox's webdriver (geckodriver) if any is missing. 
@@ -30,10 +31,10 @@ wrappedRunWD session wd = wrapWebDriverFunction (session, wd) (uncurry runWD)
 wrapWebDriverFunction :: a -> (a -> IO b) -> IO b
 wrapWebDriverFunction webdriverArgs webdriverFunction = do
     downloadIfMissing
-    seleniumHandles <- startSelenium
-    b <- webdriverFunction webdriverArgs
-    cleanupProcess seleniumHandles
-    return b
+    bracket
+        startSelenium
+        cleanupProcess
+        (const $ webdriverFunction webdriverArgs)
 
 -- | Dowloads Selenium or Firefox's webdriver (geckodriver) if they're missing. 
 downloadIfMissing :: IO()
