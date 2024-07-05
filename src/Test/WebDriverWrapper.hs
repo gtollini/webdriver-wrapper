@@ -1,5 +1,5 @@
 {- |
-Module : Core
+Module : Test.WebDriverWrapper
 Description : end-user functions.
 
 The wrapped functions (`wrappedRunSession` and `wrappedRunWD`) will download Selenium and Firefox's webdriver (geckodriver) if they're not already on the `Test.WebDriverWrapper.Constants.downloadPath`, then start Selenium before running the webdriver equivalent function (`runSession` and `runWD`). They kill the Selenium process at the end of their execution. 
