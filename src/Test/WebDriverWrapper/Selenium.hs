@@ -4,7 +4,7 @@
 
 module Test.WebDriverWrapper.Selenium (startSelenium, getSeleniumIfNeeded) where
 
-import Test.WebDriverWrapper.Constants (defaultSeleniumJarUrl, seleniumPath, downloadPath, geckoDriverPath, seleniumLogPath)
+import Test.WebDriverWrapper.Constants (defaultSeleniumJarUrl, seleniumPath, downloadPath, geckoDriverPath, seleniumLogPath, chromeDriverPath)
 import Test.WebDriverWrapper.Helpers (download)
 import System.Directory (createDirectoryIfMissing, doesFileExist)
 import Control.Monad (unless)
@@ -19,17 +19,25 @@ import UnliftIO.Retry ( constantDelay, limitRetries )
 import Data.Foldable.Extra (orM)
 import Data.List (isInfixOf)
 import System.Process.Run (proc)
+import Test.WebDriver.Capabilities (Browser)
+import Test.WebDriver (Browser(..))
 
 -- | Starts Selenium and waits for its ok message ( "Selenium Server is up and running" ) to show up at the log file.
 -- Returns the handles for the Selenium process.
-startSelenium :: IO (Maybe Handle, Maybe Handle, Maybe Handle, ProcessHandle)
-startSelenium = do
-    geckoPath <- geckoDriverPath
+startSelenium :: Browser -> IO (Maybe Handle, Maybe Handle, Maybe Handle, ProcessHandle)
+startSelenium browser = do
+    geckoPath  <- geckoDriverPath
+    chromePath <- chromeDriverPath
     selPath <- seleniumPath
     logFile <- seleniumLogPath
     writeFile logFile "" -- Create file if it doesn't exist, clears it if it does. Needs to happen for "logFileHasReadyMessage" to work correctly. 
     let
-        selArgs = [[i|-Dwebdriver.gecko.driver=#{geckoPath}|], "-jar", selPath ,"-log", logFile]
+        webdriverArgs = case browser of 
+            Firefox {} -> [i|-Dwebdriver.gecko.driver=#{geckoPath}|]
+            Chrome {}  -> [i|-Dwebdriver.chrome.driver=#{chromePath}|]
+            _          -> error "unsuported browser"
+
+        selArgs = webdriverArgs : ["-jar", selPath ,"-log", logFile]
         processParams = proc "java" selArgs
     processHandles <- createProcess processParams
     waitForSeleniumStart

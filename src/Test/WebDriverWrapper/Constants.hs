@@ -8,7 +8,7 @@ Module : Test.WebDriverWrapper.Constants
 Description : Constant values, such as links and paths.
  -}
 
-module Test.WebDriverWrapper.Constants (geckoDriverPath, defaultPath, defaultSeleniumJarUrl, desiredPlatform, getGeckoDriverDownloadUrl, geckoDriverVersionSource, downloadPath, geckoArchivePath, fileFormat, seleniumPath, seleniumLogPath) where
+module Test.WebDriverWrapper.Constants (chromeDriverArchivePath, chromeDriverArchIndex, chromeDriverVersionsUrl, chromeDriverPath, geckoDriverPath, defaultPath, defaultSeleniumJarUrl, desiredPlatform, getGeckoDriverDownloadUrl, geckoDriverVersionSource, downloadPath, geckoArchivePath, fileFormat, seleniumPath, seleniumLogPath) where
 
 import Data.String.Interpolate (i)
 import qualified System.Info as SI
@@ -34,6 +34,14 @@ geckoArchivePath = (</> archive) <$> downloadPath
 geckoDriverPath :: IO FilePath
 geckoDriverPath = (</> "geckodriver") <$> downloadPath
 
+-- | Intermediary path for the compressed version of chromedriver. Inside `downloadPath`.
+chromeDriverArchivePath :: IO FilePath
+chromeDriverArchivePath = (</> "chromedriver.zip") <$> downloadPath
+
+-- | Path for chromedriver. Inside `downloadPath`. 
+chromeDriverPath :: IO FilePath
+chromeDriverPath = (</> "chromedriver") <$> downloadPath
+
 -- | Path for selenium.jar. Inside `downloadPath`.
 seleniumPath :: IO FilePath
 seleniumPath = (</> "selenium.jar") <$> downloadPath
@@ -57,6 +65,10 @@ getGeckoDriverDownloadUrl version = [i|https://github.com/mozilla/geckodriver/re
     where
         platform = desiredPlatform
         format = fileFormat
+
+-- | API to get chromedriver's download url.
+chromeDriverVersionsUrl :: String
+chromeDriverVersionsUrl = "https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json"
 
 -- Platform-dependent variables. 
 -- | Archive format for geckodriver's download. @.zip@ for Windows, @.tar.gz@ for everyone else. 
@@ -99,3 +111,16 @@ desiredPlatform = case (SI.os, SI.arch) of
     ("linux", "i386")       -> "linux32"
 
     _ -> "linux64"
+
+-- | `chromeDriverVersionsUrl` provides a list of urls, where each platform is represented by a certain index.
+--  If the platform is not identified, @linux64@'s index is used.
+chromeDriverArchIndex :: Int
+chromeDriverArchIndex = case (SI.os, SI.arch) of
+    ("linux", "x86_64")   -> 0
+    ("darwin", "aarch64") -> 1
+    ("darwin", "x86_64")  -> 2
+    ("windows", "i386")   -> 3
+    ("mingw32", "i386")   -> 3
+    ("windows", "x86_64") -> 4
+
+    _ -> 0

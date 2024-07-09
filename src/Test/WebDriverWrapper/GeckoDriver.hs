@@ -25,14 +25,14 @@ getGeckoDriver :: IO()
 getGeckoDriver = do
     version <- getGeckoDriverVersion
     dPath <- downloadPath
-    tarballPath <- geckoArchivePath
+    geckoArchivePath' <- geckoArchivePath
 
     createDirectoryIfMissing True dPath
 
     let url = getGeckoDriverDownloadUrl version
-    download url tarballPath
-    decompress tarballPath dPath
-    removeFile tarballPath
+    download url geckoArchivePath'
+    decompress geckoArchivePath' dPath
+    removeFile geckoArchivePath'
     
 getGeckoDriverVersion :: IO String
 getGeckoDriverVersion = do

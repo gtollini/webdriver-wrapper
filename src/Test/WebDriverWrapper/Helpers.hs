@@ -3,7 +3,7 @@
 Module : Test.WebDriverWrapper.Helpers
 Description : Generic functions.
 -}
-module Test.WebDriverWrapper.Helpers (download, decompress) where
+module Test.WebDriverWrapper.Helpers (download, decompress, decompressZip) where
 
 import Test.WebDriverWrapper.Constants (fileFormat, geckoDriverPath)
 import Network.HTTP.Simple (setRequestHeader, setRequestMethod, httpLBS)
@@ -32,14 +32,20 @@ download url output = do
 decompress :: FilePath -> FilePath -> IO()
 decompress file outputPath = do
     case fileFormat of
-        ".zip"    -> do
-            archive <- toArchive <$> BS.readFile file
-            BS.writeFile outputPath $ fromArchive archive
-        ".tar.gz" -> do
-            tarball <- G.decompress <$> BS.readFile file
-            Tar.unpack outputPath $ Tar.read tarball
-
-            geckoDriver <- geckoDriverPath
-
-            setFileMode geckoDriver accessModes
+        ".zip"    -> decompressZip file outputPath
+        ".tar.gz" -> decompressTarball file outputPath
         _ -> error "unknown file"
+
+decompressZip :: FilePath -> FilePath -> IO()
+decompressZip file outputPath = do
+    archive <- toArchive <$> BS.readFile file
+    BS.writeFile outputPath $ fromArchive archive
+
+decompressTarball :: FilePath -> FilePath -> IO()
+decompressTarball file outputPath = do
+    tarball <- G.decompress <$> BS.readFile file
+    Tar.unpack outputPath $ Tar.read tarball
+
+    geckoDriver <- geckoDriverPath
+
+    setFileMode geckoDriver accessModes
