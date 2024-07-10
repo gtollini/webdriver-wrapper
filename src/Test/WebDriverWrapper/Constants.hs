@@ -115,7 +115,7 @@ desiredPlatform = case (SI.os, SI.arch) of
 
     _ -> "linux64"
 
--- | `chromeDriverVersionsUrl` provides a list of urls, where each platform is represented by a certain index.
+-- | Index for `chromeDriverVersionsUrl`, which provides a list of urls where each platform is represented by an entry.
 --  If the platform is not identified, @linux64@'s index is used.
 chromeDriverArchIndex :: Int
 chromeDriverArchIndex = case (SI.os, SI.arch) of
