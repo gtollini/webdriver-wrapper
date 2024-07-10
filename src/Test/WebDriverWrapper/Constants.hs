@@ -129,8 +129,6 @@ chromeDriverArchIndex = case (SI.os, SI.arch) of
 
     _ -> 0
 
-
-
 chromeDriverRelativeZipPath :: FilePath
 chromeDriverRelativeZipPath = "chromedriver-" <> case (SI.os, SI.arch) of
     ("linux", "x86_64")   -> "linux64"
@@ -141,3 +139,4 @@ chromeDriverRelativeZipPath = "chromedriver-" <> case (SI.os, SI.arch) of
     ("windows", "x86_64") -> "win64"
 
     _ -> "linux64"
+    

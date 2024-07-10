@@ -10,12 +10,12 @@ import Network.HTTP.Simple (setRequestHeader, setRequestMethod, httpLBS)
 import Network.HTTP.Types (hUserAgent)
 import Network.HTTP.Conduit (Response(..), parseRequest)
 import qualified Data.ByteString.Lazy as BS
-import Codec.Archive.Zip (toArchive, fromArchive, filesInArchive, extractFilesFromArchive, ZipOption (OptDestination))
+import Codec.Archive.Zip (toArchive, extractFilesFromArchive, ZipOption (OptDestination))
 import qualified Codec.Compression.GZip as G
 import qualified Codec.Archive.Tar as Tar
 import System.Posix ( setFileMode, accessModes )
-import Control.Exception (catch, SomeException (SomeException))
-import Control.Exception.Base (try)
+import Control.Exception (catch)
+import Control.Exception.Base (SomeException)
 
 -- | Downloads from @url@ at @output@ filepath. 
 download :: String -> FilePath -> IO()

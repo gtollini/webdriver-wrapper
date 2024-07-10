@@ -18,17 +18,18 @@ import qualified Data.Text as T
 import GHC.Generics (Generic)
 import System.FilePath ((</>))
 import System.Process (readProcess)
+import Data.Maybe (maybeToList)
 
-getChromeDriverIfNeeded :: IO()
-getChromeDriverIfNeeded = do
+getChromeDriverIfNeeded :: Maybe FilePath -> IO()
+getChromeDriverIfNeeded browserBinary = do
     chromeDriverPath' <- chromeDriverPath
     hasChromeDriver   <- doesFileExist chromeDriverPath'
-    unless hasChromeDriver getChromeDriver
+    unless hasChromeDriver $ getChromeDriver browserBinary
 
-getChromeDriver :: IO()
-getChromeDriver = do
+getChromeDriver :: Maybe FilePath  -> IO()
+getChromeDriver browserBinary = do
     dPath   <- downloadPath
-    chromeVersion <- getChromeVersion [] -- TODO: Pass custom executables
+    chromeVersion <- getChromeVersion browserBinary
 
     url <- getChromeDriverDownloadUrl $ T.pack chromeVersion
     chromeDriverArchivePath' <- chromeDriverArchivePath
@@ -68,18 +69,17 @@ getChromeDriverDownloadUrl chromeVersion = do
             chromedriver <- AKM.lookup "chromedriver" versionDownloads'
             platform <- chromedriver V.!? chromeDriverArchIndex
             AKM.lookup "url" platform
-            
+
         url = case maybeLastVersionUrl of
             Nothing     -> error "Couldn't get chromedriver url!"
             (Just url') -> T.unpack url'
     return url
 
-getChromeVersion :: [String] -> IO String
+getChromeVersion :: Maybe FilePath -> IO String
 getChromeVersion executableNames = do
-    let candidates = executableNames ++ ["google-chrome"]
+    let candidates = maybeToList executableNames ++ ["google-chrome"] -- defaults to google-chrome in PATH's version. 
     terminalOutput <- evalUntillSuccess $ readVersion <$> candidates
     return $ last $ words terminalOutput
-
     where
         readVersion exec = readProcess exec ["--version"] ""
 

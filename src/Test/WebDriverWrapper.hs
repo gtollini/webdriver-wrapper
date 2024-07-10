@@ -5,6 +5,7 @@ Description : end-user functions.
 The wrapped functions (`wrappedRunSession` and `wrappedRunWD`) will download Selenium and Firefox's webdriver (geckodriver) if they're not already on the `Test.WebDriverWrapper.Constants.downloadPath`, then start Selenium before running the webdriver equivalent function (`runSession` and `runWD`). They kill the Selenium process at the end of their execution. 
 -}
 {-# OPTIONS_GHC -Wno-missing-fields #-}
+{-# LANGUAGE NamedFieldPuns #-}
 module Test.WebDriverWrapper (wrappedRunSession, wrapWebDriverFunction, wrappedFirefoxRunWD, wrappedChromeRunWD) where
 
 import System.Process (cleanupProcess)
@@ -42,7 +43,7 @@ wrapWebDriverFunction :: Browser -> a -> (a -> IO b) -> IO b
 wrapWebDriverFunction browser' webdriverArgs webdriverFunction = do
     case browser' of
         Firefox {} -> downloadIfMissingGecko
-        Chrome  {} -> downloadIfMissingChrome
+        Chrome  {chromeBinary} -> downloadIfMissingChrome chromeBinary
         _          -> error "unsuported browser"
 
     bracket
@@ -55,5 +56,5 @@ downloadIfMissingGecko :: IO()
 downloadIfMissingGecko =  concurrently_ getSeleniumIfNeeded getGeckoDriverIfNeeded
 
 -- | Dowloads Selenium or Firefox's webdriver (geckodriver) if they're missing. 
-downloadIfMissingChrome :: IO()
-downloadIfMissingChrome =  concurrently_ getSeleniumIfNeeded getChromeDriverIfNeeded
+downloadIfMissingChrome :: Maybe FilePath -> IO()
+downloadIfMissingChrome chromeBinary' =  concurrently_ getSeleniumIfNeeded $ getChromeDriverIfNeeded chromeBinary'
