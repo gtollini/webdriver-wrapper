@@ -8,7 +8,7 @@ Module : Test.WebDriverWrapper.Constants
 Description : Constant values, such as links and paths.
  -}
 
-module Test.WebDriverWrapper.Constants (chromeDriverArchivePath, chromeDriverArchIndex, chromeDriverVersionsUrl, chromeDriverPath, geckoDriverPath, defaultPath, defaultSeleniumJarUrl, desiredPlatform, getGeckoDriverDownloadUrl, geckoDriverVersionSource, downloadPath, geckoArchivePath, fileFormat, seleniumPath, seleniumLogPath) where
+module Test.WebDriverWrapper.Constants (chromeDriverArchiveDirectory, chromeDriverArchivePath, chromeDriverArchIndex, chromeDriverVersionsUrl, chromeDriverPath, geckoDriverPath, defaultPath, defaultSeleniumJarUrl, desiredPlatform, getGeckoDriverDownloadUrl, geckoDriverVersionSource, downloadPath, geckoArchivePath, fileFormat, seleniumPath, seleniumLogPath) where
 
 import Data.String.Interpolate (i)
 import qualified System.Info as SI
@@ -37,6 +37,10 @@ geckoDriverPath = (</> "geckodriver") <$> downloadPath
 -- | Intermediary path for the compressed version of chromedriver. Inside `downloadPath`.
 chromeDriverArchivePath :: IO FilePath
 chromeDriverArchivePath = (</> "chromedriver.zip") <$> downloadPath
+
+-- | Where chromedriver initially gets unziped to
+chromeDriverArchiveDirectory :: IO FilePath
+chromeDriverArchiveDirectory = (</> chromeDriverRelativeZipPath) <$> downloadPath
 
 -- | Path for chromedriver. Inside `downloadPath`. 
 chromeDriverPath :: IO FilePath
@@ -124,3 +128,16 @@ chromeDriverArchIndex = case (SI.os, SI.arch) of
     ("windows", "x86_64") -> 4
 
     _ -> 0
+
+
+
+chromeDriverRelativeZipPath :: FilePath
+chromeDriverRelativeZipPath = "chromedriver-" <> case (SI.os, SI.arch) of
+    ("linux", "x86_64")   -> "linux64"
+    ("darwin", "aarch64") -> "mac-arm64"
+    ("darwin", "x86_64")  -> "max-x64"
+    ("windows", "i386")   -> "win32"
+    ("mingw32", "i386")   -> "win32"
+    ("windows", "x86_64") -> "win64"
+
+    _ -> "linux64"

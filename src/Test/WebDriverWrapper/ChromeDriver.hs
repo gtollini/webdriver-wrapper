@@ -4,8 +4,8 @@
 
 module Test.WebDriverWrapper.ChromeDriver (getChromeDriverIfNeeded, getChromeDriverDownloadUrl) where
 
-import Test.WebDriverWrapper.Constants (chromeDriverPath, downloadPath, chromeDriverVersionsUrl, chromeDriverArchIndex, chromeDriverArchivePath)
-import System.Directory (doesFileExist, createDirectoryIfMissing)
+import Test.WebDriverWrapper.Constants (chromeDriverPath, downloadPath, chromeDriverVersionsUrl, chromeDriverArchIndex, chromeDriverArchivePath, chromeDriverArchiveDirectory)
+import System.Directory (doesFileExist, createDirectoryIfMissing, copyFile, removeDirectoryRecursive, removeFile)
 import Control.Monad (unless)
 import Test.WebDriverWrapper.Helpers (download, decompressZip)
 import Network.HTTP.Simple (parseRequest, setRequestMethod, httpLBS)
@@ -16,6 +16,7 @@ import qualified Data.Aeson as A
 import qualified Data.Vector as V
 import qualified Data.Text as T
 import GHC.Generics (Generic)
+import System.FilePath ((</>))
 
 getChromeDriverIfNeeded :: IO()
 getChromeDriverIfNeeded = do
@@ -26,14 +27,20 @@ getChromeDriverIfNeeded = do
 getChromeDriver :: IO()
 getChromeDriver = do
     dPath   <- downloadPath
+    url <- getChromeDriverDownloadUrl
     chromeDriverArchivePath' <- chromeDriverArchivePath
+    chromeDriverArchiveDirectory' <- chromeDriverArchiveDirectory
+    chromeDriverPath' <- chromeDriverPath
 
     createDirectoryIfMissing True dPath
 
-    url <- getChromeDriverDownloadUrl
-    download "url" chromeDriverArchivePath'
-    -- download url chromeDriverArchivePath'
+    download url chromeDriverArchivePath'
     decompressZip chromeDriverArchivePath' dPath
+    copyFile (chromeDriverArchiveDirectory' </> "chromedriver") chromeDriverPath'
+    
+    removeDirectoryRecursive chromeDriverArchiveDirectory'
+    removeFile chromeDriverArchivePath'
+
 
 getChromeDriverDownloadUrl :: IO String
 getChromeDriverDownloadUrl = do

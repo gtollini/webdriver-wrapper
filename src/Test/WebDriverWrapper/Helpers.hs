@@ -10,7 +10,7 @@ import Network.HTTP.Simple (setRequestHeader, setRequestMethod, httpLBS)
 import Network.HTTP.Types (hUserAgent)
 import Network.HTTP.Conduit (Response(..), parseRequest)
 import qualified Data.ByteString.Lazy as BS
-import Codec.Archive.Zip (toArchive, fromArchive)
+import Codec.Archive.Zip (toArchive, fromArchive, filesInArchive, extractFilesFromArchive, ZipOption (OptDestination))
 import qualified Codec.Compression.GZip as G
 import qualified Codec.Archive.Tar as Tar
 import System.Posix ( setFileMode, accessModes )
@@ -39,7 +39,7 @@ decompress file outputPath = do
 decompressZip :: FilePath -> FilePath -> IO()
 decompressZip file outputPath = do
     archive <- toArchive <$> BS.readFile file
-    BS.writeFile outputPath $ fromArchive archive
+    extractFilesFromArchive [OptDestination outputPath] archive
 
 decompressTarball :: FilePath -> FilePath -> IO()
 decompressTarball file outputPath = do
