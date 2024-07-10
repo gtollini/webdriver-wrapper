@@ -3,7 +3,7 @@
 Module : Test.WebDriverWrapper.Helpers
 Description : Generic functions.
 -}
-module Test.WebDriverWrapper.Helpers (download, decompress, decompressZip) where
+module Test.WebDriverWrapper.Helpers (download, decompress, decompressZip, evalUntillSuccess) where
 
 import Test.WebDriverWrapper.Constants (fileFormat, geckoDriverPath)
 import Network.HTTP.Simple (setRequestHeader, setRequestMethod, httpLBS)
@@ -14,6 +14,8 @@ import Codec.Archive.Zip (toArchive, fromArchive, filesInArchive, extractFilesFr
 import qualified Codec.Compression.GZip as G
 import qualified Codec.Archive.Tar as Tar
 import System.Posix ( setFileMode, accessModes )
+import Control.Exception (catch, SomeException (SomeException))
+import Control.Exception.Base (try)
 
 -- | Downloads from @url@ at @output@ filepath. 
 download :: String -> FilePath -> IO()
@@ -49,3 +51,7 @@ decompressTarball file outputPath = do
     geckoDriver <- geckoDriverPath
 
     setFileMode geckoDriver accessModes
+
+evalUntillSuccess :: [IO String] -> IO String
+evalUntillSuccess [] = error "None succeeded on evalUntillSuccess!"
+evalUntillSuccess (x:xs) = catch x (const $ evalUntillSuccess xs :: SomeException -> IO String)

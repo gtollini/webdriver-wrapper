@@ -2,12 +2,12 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DeriveAnyClass #-}
 
-module Test.WebDriverWrapper.ChromeDriver (getChromeDriverIfNeeded, getChromeDriverDownloadUrl) where
+module Test.WebDriverWrapper.ChromeDriver (getChromeDriverIfNeeded, getChromeDriverDownloadUrl, getChromeVersion) where
 
 import Test.WebDriverWrapper.Constants (chromeDriverPath, downloadPath, chromeDriverVersionsUrl, chromeDriverArchIndex, chromeDriverArchivePath, chromeDriverArchiveDirectory)
 import System.Directory (doesFileExist, createDirectoryIfMissing, copyFile, removeDirectoryRecursive, removeFile)
 import Control.Monad (unless)
-import Test.WebDriverWrapper.Helpers (download, decompressZip)
+import Test.WebDriverWrapper.Helpers (download, decompressZip, evalUntillSuccess)
 import Network.HTTP.Simple (parseRequest, setRequestMethod, httpLBS)
 import Network.HTTP.Client.Conduit (Response(responseBody))
 import Data.Aeson (eitherDecode)
@@ -17,6 +17,7 @@ import qualified Data.Vector as V
 import qualified Data.Text as T
 import GHC.Generics (Generic)
 import System.FilePath ((</>))
+import System.Process (readProcess)
 
 getChromeDriverIfNeeded :: IO()
 getChromeDriverIfNeeded = do
@@ -27,7 +28,9 @@ getChromeDriverIfNeeded = do
 getChromeDriver :: IO()
 getChromeDriver = do
     dPath   <- downloadPath
-    url <- getChromeDriverDownloadUrl
+    chromeVersion <- getChromeVersion [] -- TODO: Pass custom executables
+
+    url <- getChromeDriverDownloadUrl $ T.pack chromeVersion
     chromeDriverArchivePath' <- chromeDriverArchivePath
     chromeDriverArchiveDirectory' <- chromeDriverArchiveDirectory
     chromeDriverPath' <- chromeDriverPath
@@ -42,8 +45,8 @@ getChromeDriver = do
     removeFile chromeDriverArchivePath'
 
 
-getChromeDriverDownloadUrl :: IO String
-getChromeDriverDownloadUrl = do
+getChromeDriverDownloadUrl :: T.Text -> IO String
+getChromeDriverDownloadUrl chromeVersion = do
     requestUrl <- parseRequest chromeDriverVersionsUrl
     let
         request
@@ -53,17 +56,32 @@ getChromeDriverDownloadUrl = do
     let
         decodedResponse = eitherDecode response :: Either String ChromeDriverMain
 
-        versionDownloads = case decodedResponse of
+        allVersions = case decodedResponse of
             (Left err)        -> error err
-            (Right versions') -> downloads $ V.last $ versions  versions'
+            (Right versions') ->  versions  versions'
+        
+        versionIndex = V.findIndexR ((==chromeVersion).version) allVersions
+        versionDownloads = downloads . (allVersions V.!) <$> versionIndex
+
         maybeLastVersionUrl  =  do
-            chromedriver <- AKM.lookup "chromedriver" versionDownloads 
+            versionDownloads' <- versionDownloads
+            chromedriver <- AKM.lookup "chromedriver" versionDownloads'
             platform <- chromedriver V.!? chromeDriverArchIndex
             AKM.lookup "url" platform
+            
         url = case maybeLastVersionUrl of
             Nothing     -> error "Couldn't get chromedriver url!"
             (Just url') -> T.unpack url'
     return url
+
+getChromeVersion :: [String] -> IO String
+getChromeVersion executableNames = do
+    let candidates = executableNames ++ ["google-chrome"]
+    terminalOutput <- evalUntillSuccess $ readVersion <$> candidates
+    return $ last $ words terminalOutput
+
+    where
+        readVersion exec = readProcess exec ["--version"] ""
 
 -- To help out Aeson in parsing the JSON.
 data ChromeDriverMain = ChromeDriverMain{
