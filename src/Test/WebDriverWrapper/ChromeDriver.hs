@@ -2,7 +2,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DeriveAnyClass #-}
 
-module Test.WebDriverWrapper.ChromeDriver (getChromeDriverIfNeeded, getChromeDriverDownloadUrl, getChromeVersion) where
+module Test.WebDriverWrapper.ChromeDriver (getChromeDriverIfNeeded) where
 
 import Test.WebDriverWrapper.Constants (chromeDriverPath, downloadPath, chromeDriverVersionsUrl, chromeDriverArchIndex, chromeDriverArchivePath, chromeDriverArchiveDirectory)
 import System.Directory (doesFileExist, createDirectoryIfMissing, copyFile, removeDirectoryRecursive, removeFile)
@@ -20,6 +20,7 @@ import System.FilePath ((</>))
 import System.Process (readProcess)
 import Data.Maybe (maybeToList)
 
+-- | Checks if @chromedriver@ is in the `downloadPath`. If not, download it. 
 getChromeDriverIfNeeded :: Maybe FilePath -> IO()
 getChromeDriverIfNeeded browserBinary = do
     chromeDriverPath' <- chromeDriverPath

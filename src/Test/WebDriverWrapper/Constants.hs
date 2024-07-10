@@ -7,7 +7,6 @@
 Module : Test.WebDriverWrapper.Constants
 Description : Constant values, such as links and paths.
  -}
-
 module Test.WebDriverWrapper.Constants (chromeDriverArchiveDirectory, chromeDriverArchivePath, chromeDriverArchIndex, chromeDriverVersionsUrl, chromeDriverPath, geckoDriverPath, defaultPath, defaultSeleniumJarUrl, desiredPlatform, getGeckoDriverDownloadUrl, geckoDriverVersionSource, downloadPath, geckoArchivePath, fileFormat, seleniumPath, seleniumLogPath) where
 
 import Data.String.Interpolate (i)

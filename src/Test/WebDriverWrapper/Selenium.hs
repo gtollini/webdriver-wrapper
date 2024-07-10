@@ -23,6 +23,7 @@ import Test.WebDriver.Capabilities (Browser)
 import Test.WebDriver (Browser(..))
 
 -- | Starts Selenium and waits for its ok message ( "Selenium Server is up and running" ) to show up at the log file.
+-- Takes in a `Browser` (since it needs to use the correct webdriver).
 -- Returns the handles for the Selenium process.
 startSelenium :: Browser -> IO (Maybe Handle, Maybe Handle, Maybe Handle, ProcessHandle)
 startSelenium browser = do

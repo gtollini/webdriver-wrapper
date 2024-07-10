@@ -38,13 +38,13 @@ wrappedChromeRunWD ::  WDSession -> WD a -> IO a
 wrappedChromeRunWD session wd = wrapWebDriverFunction (Chrome{}) (session, wd) (uncurry runWD)
 
 -- | Runs a function in between starting and killing Selenium. Takes in the arguments and the function, in that order. 
--- Will download Selenium or the Browser's webdriver (geckodriver or chromedriver) if any is missing. 
+-- Will download Selenium and the Browser's webdriver (geckodriver or chromedriver) if any is missing. 
 wrapWebDriverFunction :: Browser -> a -> (a -> IO b) -> IO b
 wrapWebDriverFunction browser' webdriverArgs webdriverFunction = do
     case browser' of
-        Firefox {} -> downloadIfMissingGecko
+        Firefox {}             -> downloadIfMissingGecko
         Chrome  {chromeBinary} -> downloadIfMissingChrome chromeBinary
-        _          -> error "unsuported browser"
+        _                      -> error "unsuported browser"
 
     bracket
         (startSelenium browser')
@@ -56,5 +56,6 @@ downloadIfMissingGecko :: IO()
 downloadIfMissingGecko =  concurrently_ getSeleniumIfNeeded getGeckoDriverIfNeeded
 
 -- | Dowloads Selenium or Firefox's webdriver (geckodriver) if they're missing. 
+-- Takes a @chromeBinary@'s path, whose @chromedriver@ version will match. 
 downloadIfMissingChrome :: Maybe FilePath -> IO()
 downloadIfMissingChrome chromeBinary' =  concurrently_ getSeleniumIfNeeded $ getChromeDriverIfNeeded chromeBinary'

@@ -4,7 +4,7 @@ module Test.WebDriverWrapper.GeckoDriver (getGeckoDriverIfNeeded) where
 
 import qualified Data.Text as T
 import Network.HTTP.Simple (setRequestMethod, httpLBS, parseRequest, setRequestHeader)
-import Test.WebDriverWrapper.Helpers (download, decompress)
+import Test.WebDriverWrapper.Helpers (download, decompressGecko)
 import Test.WebDriverWrapper.Constants (getGeckoDriverDownloadUrl, geckoDriverVersionSource, geckoArchivePath, geckoDriverPath, downloadPath)
 import Network.HTTP.Client.Conduit (Response(responseBody))
 import Data.Aeson (eitherDecode)
@@ -31,7 +31,7 @@ getGeckoDriver = do
 
     let url = getGeckoDriverDownloadUrl version
     download url geckoArchivePath'
-    decompress geckoArchivePath' dPath
+    decompressGecko geckoArchivePath' dPath
     removeFile geckoArchivePath'
     
 getGeckoDriverVersion :: IO String
